@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'theme/app_theme.dart';
 import 'providers/asset_provider.dart';
-import 'screens/asset_list_screen.dart';
+import 'screens/home_screen.dart';
 
 void main() {
   runApp(const ITAssetManagerApp());
@@ -18,11 +19,10 @@ class ITAssetManagerApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Gerenciador de Ativos de TI',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: const AssetListScreen(),
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        home: const HomeScreen(),
       ),
     );
   }
