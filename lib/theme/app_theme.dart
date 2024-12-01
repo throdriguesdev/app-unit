@@ -10,7 +10,7 @@ class AppTheme {
       ),
       useMaterial3: true,
       textTheme: GoogleFonts.robotoTextTheme(),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: true,
         backgroundColor: Colors.transparent,

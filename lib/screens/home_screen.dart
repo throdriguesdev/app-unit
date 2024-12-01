@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
 import 'asset_list_screen.dart';
 import 'file_management_screen.dart';
+import 'dashboard_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -37,6 +38,14 @@ class HomeScreen extends StatelessWidget {
               title: 'Gerenciar Ativos',
               description: 'Visualize e gerencie seus ativos de TI',
               screen: const AssetListScreen(),
+            ),
+            const SizedBox(height: 50),
+            _buildMenuCard(
+              context,
+              icon: Icons.dashboard,
+              title: 'Dashboard',
+              description: 'Visualize estatísticas dos seus ativos',
+              screen: const DashboardScreen(), // Add Dashboard screen
             ),
             const SizedBox(height: 20),
             _buildMenuCard(

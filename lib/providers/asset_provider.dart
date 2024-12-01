@@ -62,4 +62,30 @@ class AssetProvider with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  // New Dashboard-related methods
+  Map<String, int> getAssetStatusCounts() {
+    final statusCounts = <String, int>{};
+
+    for (var asset in _assets) {
+      statusCounts[asset.status] = (statusCounts[asset.status] ?? 0) + 1;
+    }
+
+    return statusCounts;
+  }
+
+  Map<String, int> getAssetCategoryCounts() {
+    final categoryCounts = <String, int>{};
+
+    for (var asset in _assets) {
+      categoryCounts[asset.category] =
+          (categoryCounts[asset.category] ?? 0) + 1;
+    }
+
+    return categoryCounts;
+  }
+
+  int getTotalAssets() {
+    return _assets.length;
+  }
 }
