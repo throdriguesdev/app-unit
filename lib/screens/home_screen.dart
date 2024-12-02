@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'asset_list_screen.dart';
 import 'file_management_screen.dart';
 import 'dashboard_screen.dart';
@@ -11,57 +13,78 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 50),
-            Text(
-              'Gerenciador de Ativos de TI',
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                'Gerencie seus ativos de tecnologia de forma simples e eficiente',
-                style: Theme.of(context).textTheme.bodyLarge,
-                textAlign: TextAlign.center,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 32),
+              Expanded(
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    _buildMenuTile(
+                      context,
+                      icon: Icons.devices,
+                      title: 'Gerenciar Ativos',
+                      description: 'Visualize e gerencie seus ativos de TI',
+                      screen: const AssetListScreen(),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuTile(
+                      context,
+                      icon: Icons.dashboard,
+                      title: 'Dashboard',
+                      description: 'Visualize estatísticas dos seus ativos',
+                      screen: const DashboardScreen(),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildMenuTile(
+                      context,
+                      icon: Icons.file_copy,
+                      title: 'Gerenciar Arquivos',
+                      description:
+                          'Faça upload e gerencie arquivos relacionados',
+                      screen: const FileManagementScreen(),
+                    ),
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 50),
-            _buildMenuCard(
-              context,
-              icon: Icons.devices,
-              title: 'Gerenciar Ativos',
-              description: 'Visualize e gerencie seus ativos de TI',
-              screen: const AssetListScreen(),
-            ),
-            const SizedBox(height: 50),
-            _buildMenuCard(
-              context,
-              icon: Icons.dashboard,
-              title: 'Dashboard',
-              description: 'Visualize estatísticas dos seus ativos',
-              screen: const DashboardScreen(), // Add Dashboard screen
-            ),
-            const SizedBox(height: 20),
-            _buildMenuCard(
-              context,
-              icon: Icons.file_copy,
-              title: 'Gerenciar Arquivos',
-              description: 'Faça upload e gerencie arquivos relacionados',
-              screen: const FileManagementScreen(),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildMenuCard(
+  Widget _buildHeader(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Gerenciador de Ativos',
+          style: GoogleFonts.roboto(
+            textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Gerencie seus recursos de TI com facilidade',
+          style: GoogleFonts.roboto(
+            textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey[600],
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuTile(
     BuildContext context, {
     required IconData icon,
     required String title,
@@ -69,14 +92,36 @@ class HomeScreen extends StatelessWidget {
     required Widget screen,
   }) {
     return OpenContainer(
-      closedBuilder: (context, openContainer) => Card(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
+      closedBuilder: (context, openContainer) => Container(
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300, width: 1),
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: ListTile(
-          leading: Icon(icon,
-              size: 40, color: Theme.of(context).colorScheme.primary),
-          title: Text(title, style: Theme.of(context).textTheme.titleLarge),
-          subtitle: Text(description),
-          trailing: const Icon(Icons.chevron_right),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: Icon(
+            icon,
+            size: 32,
+            color: Theme.of(context).primaryColor,
+          ),
+          title: Text(
+            title,
+            style: GoogleFonts.roboto(
+              fontWeight: FontWeight.w500,
+              fontSize: 18,
+            ),
+          ),
+          subtitle: Text(
+            description,
+            style: GoogleFonts.roboto(
+              color: Colors.grey[600],
+            ),
+          ),
+          trailing: Icon(
+            Icons.chevron_right,
+            color: Colors.grey.shade400,
+          ),
           onTap: openContainer,
         ),
       ),
