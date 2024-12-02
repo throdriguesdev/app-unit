@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/asset.dart';
 import '../services/asset_service.dart';
 
@@ -6,6 +6,10 @@ class AssetProvider with ChangeNotifier {
   List<Asset> _assets = [];
   bool _isLoading = false;
   String _errorMessage = '';
+
+  AssetProvider() {
+    fetchAssets();
+  }
 
   List<Asset> get assets => _assets;
   bool get isLoading => _isLoading;
@@ -18,13 +22,12 @@ class AssetProvider with ChangeNotifier {
 
     try {
       _assets = await AssetService().fetchAssets();
-      _isLoading = false;
     } catch (e) {
+      _errorMessage = 'Erro ao carregar ativos: $e';
+    } finally {
       _isLoading = false;
-      _errorMessage = e.toString();
+      notifyListeners();
     }
-
-    notifyListeners();
   }
 
   Future<void> addAsset(Asset asset) async {
@@ -63,7 +66,7 @@ class AssetProvider with ChangeNotifier {
     }
   }
 
-  // New Dashboard-related methods
+  // Métodos relacionados ao Dashboard
   Map<String, int> getAssetStatusCounts() {
     final statusCounts = <String, int>{};
 

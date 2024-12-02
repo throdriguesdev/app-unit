@@ -41,32 +41,46 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildTotalAssetsCard(int totalAssets) {
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            const Icon(Icons.devices, size: 40, color: Colors.blue),
-            const SizedBox(width: 16),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Total de Ativos',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue.shade300, Colors.blue.shade700],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              const Icon(Icons.devices, size: 40, color: Colors.white),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Total de Ativos',
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  '$totalAssets',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w600,
+                  Text(
+                    '$totalAssets',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -74,6 +88,8 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildStatusBreakdown(Map<String, int> statusCounts) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -87,10 +103,13 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ...statusCounts.entries
-                .map((entry) => _buildStatusRow(
-                    entry.key, entry.value, _getColorForStatus(entry.key)))
-                .toList(),
+            ...statusCounts.entries.map(
+              (entry) => _buildStatusRow(
+                _translateStatus(entry.key),
+                entry.value,
+                _getColorForStatus(entry.key),
+              ),
+            ),
           ],
         ),
       ),
@@ -111,9 +130,11 @@ class DashboardScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
-          Text(
-            '$status: $count',
-            style: const TextStyle(fontSize: 16),
+          Expanded(
+            child: Text(
+              '$status: $count',
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),
@@ -122,6 +143,8 @@ class DashboardScreen extends StatelessWidget {
 
   Widget _buildCategoryBreakdown(Map<String, int> categoryCounts) {
     return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -135,9 +158,12 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            ...categoryCounts.entries
-                .map((entry) => _buildCategoryRow(entry.key, entry.value))
-                .toList(),
+            ...categoryCounts.entries.map(
+              (entry) => _buildCategoryRow(
+                _translateCategory(entry.key),
+                entry.value,
+              ),
+            ),
           ],
         ),
       ),
@@ -151,22 +177,42 @@ class DashboardScreen extends StatelessWidget {
         children: [
           const Icon(Icons.circle, color: Colors.blue, size: 20),
           const SizedBox(width: 16),
-          Text(
-            '$category: $count',
-            style: const TextStyle(fontSize: 16),
+          Expanded(
+            child: Text(
+              '$category: $count',
+              style: const TextStyle(fontSize: 16),
+            ),
           ),
         ],
       ),
     );
   }
 
+  String _translateStatus(String status) {
+    final Map<String, String> translations = {
+      'in_use': 'Em Uso',
+      'inactive': 'Aposentado',
+      'maintenance': 'Em Manutenção',
+    };
+    return translations[status.toLowerCase()] ?? 'Desconhecido';
+  }
+
+  String _translateCategory(String category) {
+    final Map<String, String> translations = {
+      'hardware': 'Hardware',
+      'software': 'Software',
+      'network': 'Rede',
+    };
+    return translations[category.toLowerCase()] ?? 'Outros';
+  }
+
   Color _getColorForStatus(String status) {
     switch (status.toLowerCase()) {
-      case 'em uso':
+      case 'in_use':
         return Colors.green;
-      case 'retired':
+      case 'inactive':
         return Colors.red;
-      case 'em manutenção':
+      case 'maintenance':
         return Colors.orange;
       default:
         return Colors.grey;
