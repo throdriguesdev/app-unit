@@ -1,6 +1,6 @@
 # app_unit
 
-A new Flutter project.
+app unit flutter
 
 ## Getting Started
 

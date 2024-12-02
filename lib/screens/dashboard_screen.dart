@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../providers/asset_provider.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -28,9 +29,11 @@ class DashboardScreen extends StatelessWidget {
               children: [
                 _buildTotalAssetsCard(totalAssets),
                 const SizedBox(height: 16),
-                _buildStatusBreakdown(statusCounts),
+                _buildStatusChart(statusCounts),
                 const SizedBox(height: 16),
-                _buildCategoryBreakdown(categoryCounts),
+                _buildCategoryChart(categoryCounts),
+                const SizedBox(height: 16),
+                _buildAdditionalStats(assetProvider),
               ],
             ),
           );
@@ -86,9 +89,22 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBreakdown(Map<String, int> statusCounts) {
+  Widget _buildStatusChart(Map<String, int> statusCounts) {
+    final List<PieChartSectionData> sections = statusCounts.entries
+        .map(
+          (entry) => PieChartSectionData(
+        title: '${entry.value}',
+        value: entry.value.toDouble(),
+        color: _getColorForStatus(entry.key),
+        radius: 50,
+        titleStyle: const TextStyle(
+            fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+      ),
+    )
+        .toList();
+
     return Card(
-      elevation: 2,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -96,18 +112,92 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Ativos por Status',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              'Distribuição por Status',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ...statusCounts.entries.map(
-              (entry) => _buildStatusRow(
-                _translateStatus(entry.key),
-                entry.value,
-                _getColorForStatus(entry.key),
+            SizedBox(
+              height: 200,
+              child: PieChart(PieChartData(
+                sections: sections,
+                centerSpaceRadius: 40,
+                sectionsSpace: 2,
+              )),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChart(Map<String, int> categoryCounts) {
+    final List<BarChartGroupData> barGroups = categoryCounts.entries
+        .toList()
+        .asMap()
+        .entries
+        .map(
+          (entry) => BarChartGroupData(
+        x: entry.key,
+        barRods: [
+          BarChartRodData(
+            toY: entry.value.value.toDouble(),
+            color: Colors.blueAccent,
+            width: 15,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ],
+      ),
+    )
+        .toList();
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Distribuição por Categoria',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              height: 300,
+              child: BarChart(
+                BarChartData(
+                  alignment: BarChartAlignment.spaceAround,
+                  barGroups: barGroups,
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 32,
+                        interval: 1,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            value.toString(),
+                            style: const TextStyle(
+                                color: Colors.black, fontSize: 12),
+                          );
+                        },
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        getTitlesWidget: (value, meta) {
+                          final index = value.toInt();
+                          final categories = categoryCounts.keys.toList();
+                          if (index < 0 || index >= categories.length) {
+                            return const SizedBox.shrink();
+                          }
+                          return Text(categories[index]);
+                        },
+                      ),
+                    ),
+                  ),
+                ),
               ),
             ),
           ],
@@ -116,34 +206,9 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusRow(String status, int count, Color color) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Container(
-            width: 20,
-            height: 20,
-            decoration: BoxDecoration(
-              color: color,
-              shape: BoxShape.circle,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              '$status: $count',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCategoryBreakdown(Map<String, int> categoryCounts) {
+  Widget _buildAdditionalStats(AssetProvider assetProvider) {
     return Card(
-      elevation: 2,
+      elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -151,59 +216,20 @@ class DashboardScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Ativos por Categoria',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              'Estatísticas Adicionais',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-            ...categoryCounts.entries.map(
-              (entry) => _buildCategoryRow(
-                _translateCategory(entry.key),
-                entry.value,
-              ),
-            ),
+            Text(
+                'Ativos em Uso: ${assetProvider.getAssetsByStatus("in_use").length}'),
+            Text(
+                'Ativos Inativos: ${assetProvider.getAssetsByStatus("inactive").length}'),
+            Text(
+                'Ativos em Manutenção: ${assetProvider.getAssetsByStatus("maintenance").length}'),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildCategoryRow(String category, int count) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          const Icon(Icons.circle, color: Colors.blue, size: 20),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              '$category: $count',
-              style: const TextStyle(fontSize: 16),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  String _translateStatus(String status) {
-    final Map<String, String> translations = {
-      'in_use': 'Em Uso',
-      'inactive': 'Aposentado',
-      'maintenance': 'Em Manutenção',
-    };
-    return translations[status.toLowerCase()] ?? 'Desconhecido';
-  }
-
-  String _translateCategory(String category) {
-    final Map<String, String> translations = {
-      'hardware': 'Hardware',
-      'software': 'Software',
-      'network': 'Rede',
-    };
-    return translations[category.toLowerCase()] ?? 'Outros';
   }
 
   Color _getColorForStatus(String status) {
@@ -217,5 +243,14 @@ class DashboardScreen extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  String _translateCategory(String category) {
+    final translations = {
+      'hardware': 'Hardware',
+      'software': 'Software',
+      'network': 'Rede'
+    };
+    return translations[category.toLowerCase()] ?? 'Outros';
   }
 }

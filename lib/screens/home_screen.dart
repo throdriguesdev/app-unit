@@ -44,7 +44,7 @@ class HomeScreen extends StatelessWidget {
                       icon: Icons.file_copy,
                       title: 'Gerenciar Arquivos',
                       description:
-                          'Faça upload e gerencie arquivos relacionados',
+                      'Faça upload e gerencie arquivos relacionados',
                       screen: const FileManagementScreen(),
                     ),
                   ],
@@ -75,12 +75,12 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildMenuTile(
-    BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String description,
-    required Widget screen,
-  }) {
+      BuildContext context, {
+        required IconData icon,
+        required String title,
+        required String description,
+        required Widget screen,
+      }) {
     return OpenContainer(
       closedBuilder: (context, openContainer) => GestureDetector(
         onTap: openContainer,
@@ -102,7 +102,7 @@ class HomeScreen extends StatelessWidget {
           ),
           child: ListTile(
             contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: Icon(
               icon,
               size: 32,

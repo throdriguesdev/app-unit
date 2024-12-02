@@ -24,9 +24,9 @@ class Asset {
   }
 
   Map<String, dynamic> toJson() => {
-        'name': name,
-        'description': description,
-        'category': category,
-        'status': status,
-      };
+    'name': name,
+    'description': description,
+    'category': category,
+    'status': status,
+  };
 }

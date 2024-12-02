@@ -63,7 +63,7 @@ class AppTheme {
       scaffoldBackgroundColor: const Color(0xFF1E293B),
       useMaterial3: true,
       textTheme:
-          GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
+      GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
         displayLarge: GoogleFonts.inter(
           color: const Color(0xFFFFFFFF), // Branco puro para textos
           fontWeight: FontWeight.w700,

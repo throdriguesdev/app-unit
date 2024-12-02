@@ -19,12 +19,43 @@ class _AssetListScreenState extends State<AssetListScreen> {
     });
   }
 
+  IconData _getCategoryIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'hardware':
+        return Icons.computer;
+      case 'software':
+        return Icons.folder;
+      case 'network':
+        return Icons.network_wifi;
+      default:
+        return Icons.device_unknown;
+    }
+  }
+
+  String _translateStatus(String status) {
+    final Map<String, String> translations = {
+      'in_use': 'Em Uso',
+      'inactive': 'Aposentado',
+      'maintenance': 'Em Manutenção',
+    };
+    return translations[status.toLowerCase()] ?? 'Desconhecido';
+  }
+
+  String _translateCategory(String category) {
+    final Map<String, String> translations = {
+      'hardware': 'Hardware',
+      'software': 'Software',
+      'network': 'Rede',
+    };
+    return translations[category.toLowerCase()] ?? 'Outros';
+  }
+
   void _showAssetDialog({Asset? asset}) {
     final nameController = TextEditingController(text: asset?.name);
     final descriptionController =
-        TextEditingController(text: asset?.description);
-    final categoryController = TextEditingController(text: asset?.category);
-    final statusController = TextEditingController(text: asset?.status);
+    TextEditingController(text: asset?.description);
+    String category = asset?.category ?? 'hardware';
+    String status = asset?.status ?? 'in_use';
 
     showDialog(
       context: context,
@@ -45,14 +76,28 @@ class _AssetListScreenState extends State<AssetListScreen> {
                 maxLines: 2,
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: categoryController,
+              DropdownButtonFormField<String>(
+                value: category,
+                onChanged: (value) => setState(() => category = value!),
                 decoration: const InputDecoration(labelText: 'Categoria'),
+                items: const [
+                  DropdownMenuItem(value: 'hardware', child: Text('Hardware')),
+                  DropdownMenuItem(value: 'software', child: Text('Software')),
+                  DropdownMenuItem(value: 'network', child: Text('Rede')),
+                ],
               ),
               const SizedBox(height: 8),
-              TextField(
-                controller: statusController,
+              DropdownButtonFormField<String>(
+                value: status,
+                onChanged: (value) => setState(() => status = value!),
                 decoration: const InputDecoration(labelText: 'Status'),
+                items: const [
+                  DropdownMenuItem(value: 'in_use', child: Text('Em Uso')),
+                  DropdownMenuItem(
+                      value: 'inactive', child: Text('Aposentado')),
+                  DropdownMenuItem(
+                      value: 'maintenance', child: Text('Em Manutenção')),
+                ],
               ),
             ],
           ),
@@ -68,8 +113,8 @@ class _AssetListScreenState extends State<AssetListScreen> {
                 id: asset?.id,
                 name: nameController.text.trim(),
                 description: descriptionController.text.trim(),
-                category: categoryController.text.trim(),
-                status: statusController.text.trim(),
+                category: category,
+                status: status,
               );
 
               if (asset == null) {
@@ -124,42 +169,76 @@ class _AssetListScreenState extends State<AssetListScreen> {
             );
           }
 
-          return ListView.builder(
-            itemCount: assetProvider.assets.length,
-            itemBuilder: (context, index) {
-              final asset = assetProvider.assets[index];
-              return Dismissible(
-                key: ValueKey(asset.id ?? index),
-                background: Container(color: Colors.red),
-                onDismissed: (_) {
-                  Provider.of<AssetProvider>(context, listen: false)
-                      .removeAsset(asset.id!);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Ativo ${asset.name} removido')),
-                  );
-                },
-                child: ListTile(
-                  title: Text(asset.name),
-                  subtitle: Text('${asset.category} - ${asset.status}'),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+          return Column(
+            children: [
+              Card(
+                margin: const EdgeInsets.all(8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () => _showAssetDialog(asset: asset),
+                      const Text(
+                        'Total de Ativos',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          Provider.of<AssetProvider>(context, listen: false)
-                              .removeAsset(asset.id!);
-                        },
+                      Text(
+                        '${assetProvider.assets.length}',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
                 ),
-              );
-            },
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: assetProvider.assets.length,
+                  itemBuilder: (context, index) {
+                    final asset = assetProvider.assets[index];
+                    return Dismissible(
+                      key: ValueKey(asset.id ?? index),
+                      background: Container(color: Colors.red),
+                      onDismissed: (_) {
+                        Provider.of<AssetProvider>(context, listen: false)
+                            .removeAsset(asset.id!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Ativo ${asset.name} removido')),
+                        );
+                      },
+                      child: ListTile(
+                        leading: Icon(
+                          _getCategoryIcon(asset.category),
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        title: Text(asset.name),
+                        subtitle: Text(
+                            '${_translateCategory(asset.category)} - ${_translateStatus(asset.status)}'),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.blue),
+                              onPressed: () => _showAssetDialog(asset: asset),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () {
+                                Provider.of<AssetProvider>(context,
+                                    listen: false)
+                                    .removeAsset(asset.id!);
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
           );
         },
       ),

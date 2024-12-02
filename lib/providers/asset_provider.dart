@@ -66,6 +66,11 @@ class AssetProvider with ChangeNotifier {
     }
   }
 
+  // Filtrar ativos por status
+  List<Asset> getAssetsByStatus(String status) {
+    return _assets.where((asset) => asset.status == status).toList();
+  }
+
   // Métodos relacionados ao Dashboard
   Map<String, int> getAssetStatusCounts() {
     final statusCounts = <String, int>{};

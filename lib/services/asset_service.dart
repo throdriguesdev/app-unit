@@ -3,7 +3,7 @@ import 'dart:convert';
 import '../models/asset.dart';
 
 class AssetService {
-  static const String baseUrl = 'http://0.0.0.0:8000/assets';
+  static const String baseUrl = 'http://192.168.10.142:8000/assets';
 
   Future<List<Asset>> fetchAssets() async {
     try {
