@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:animations/animations.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import 'asset_list_screen.dart';
 import 'file_management_screen.dart';
@@ -64,21 +63,12 @@ class HomeScreen extends StatelessWidget {
       children: [
         Text(
           'Gerenciador de Ativos',
-          style: GoogleFonts.roboto(
-            textStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-          ),
+          style: Theme.of(context).textTheme.displayMedium,
         ),
         const SizedBox(height: 8),
         Text(
           'Gerencie seus recursos de TI com facilidade',
-          style: GoogleFonts.roboto(
-            textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
-          ),
+          style: Theme.of(context).textTheme.bodyLarge,
         ),
       ],
     );
@@ -92,40 +82,48 @@ class HomeScreen extends StatelessWidget {
     required Widget screen,
   }) {
     return OpenContainer(
-      closedBuilder: (context, openContainer) => Container(
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300, width: 1),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: ListTile(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          leading: Icon(
-            icon,
-            size: 32,
-            color: Theme.of(context).primaryColor,
+      closedBuilder: (context, openContainer) => GestureDetector(
+        onTap: openContainer,
+        child: Container(
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardTheme.color,
+            border: Border.all(
+              color: Colors.grey.shade300,
+              width: 1,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade200,
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          title: Text(
-            title,
-            style: GoogleFonts.roboto(
-              fontWeight: FontWeight.w500,
-              fontSize: 18,
+          child: ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            leading: Icon(
+              icon,
+              size: 32,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            title: Text(
+              title,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            subtitle: Text(
+              description,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            trailing: Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
-          subtitle: Text(
-            description,
-            style: GoogleFonts.roboto(
-              color: Colors.grey[600],
-            ),
-          ),
-          trailing: Icon(
-            Icons.chevron_right,
-            color: Colors.grey.shade400,
-          ),
-          onTap: openContainer,
         ),
       ),
-      openBuilder: (context, _) => screen,
+      openBuilder: (context, _) => screen, // Aqui está o parâmetro obrigatório.
       transitionType: ContainerTransitionType.fadeThrough,
     );
   }
